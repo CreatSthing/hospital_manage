@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.xhu.mapper.DocPatientMapper">
+
+    <resultMap id="getDocPatient" type="edu.xhu.pojo.DocPatient">
+        <result column="emp_no" jdbcType="VARCHAR" property="emp_no"/>
+        <result column="emp_name" jdbcType="VARCHAR" property="emp_name"/>
+        <result column="paitient_id" jdbcType="INTEGER" property="paitient_id"/>
+        <result column="paitient_name" jdbcType="VARCHAR" property="paitient_name"/>
+        <result column="paitient_gender" jdbcType="VARCHAR" property="paitient_gender"/>
+        <result column="paitient_state" jdbcType="VARCHAR" property="paitient_state"/>
+        <result column="paitient_dateStart" jdbcType="DATE" property="paitient_dateStart"/>
+
+    </resultMap>
+
+    <select id="countPerson" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM
+        (SELECT
+        personnel.emp_no,
+        personnel.emp_name,
+        paitient.paitient_id,
+        paitient.paitient_name,
+        paitient_gender,
+        paitient_state,
+        paitient_dateStart
+        from paitient INNER JOIN personnel
+        WHERE paitient.paitient_doc=personnel.emp_no
+        ) as temp
+        <where>
+            <if test="emp_no!=null and emp_no!='' ">
+                emp_no = #{emp_no}
+            </if>
+            <if test="emp_name!=null and emp_name!=''">
+                and emp_name like concat('%',#{emp_name} '%')
+            </if>
+        </where>
+
+
+
+
+
+    </select>
+
+    <select id="queryDocPersonListByPage" parameterType="map" resultMap="getDocPatient">
+
+        SELECT  * FROM
+        (SELECT * FROM
+        (SELECT
+        personnel.emp_no,
+        personnel.emp_name,
+        paitient.paitient_id,
+        paitient.paitient_name,
+        paitient_gender,
+        paitient_state,
+        paitient_dateStart
+        from paitient INNER JOIN personnel
+        WHERE paitient.paitient_doc=personnel.emp_no
+        ) as temp
+        <where>
+            <if test="emp_no!=null and emp_no!='' ">
+                emp_no = #{emp_no}
+            </if>
+            <if test="emp_name!=null and emp_name!=''">
+                and emp_name like concat('%',#{emp_name} '%')
+            </if>
+        </where>) as temp2 limit #{pageNow},#{pageSize}
+
+
+
+
+    </select>
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,115 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>添加确诊病例表单</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
+</head>
+<body>
+
+<form id="myform" class="layui-form" lay-filter="layuiadmin-form-admin" id="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
+  <!--  employee_id在页面中隐藏了，前端传递给后端也传递了employee_id值  -->
+  <input type="hidden" name="paitient_id" id="paitient_id" value="">
+  <!--姓名-->
+  <div class="layui-form-item">
+    <label class="layui-form-label required">病人姓名</label>
+    <div class="layui-input-inline">
+      <input type="text" id="paitient_name" name="paitient_name" lay-verify="required"  autocomplete="off" class="layui-input" >
+    </div>
+  </div>
+  <!--性别-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">病人性别</label>
+    <div class="layui-input-inline">
+      <input type="radio" name="paitient_gender" value="男" title="男" >
+      <input type="radio" name="paitient_gender" value="女" title="女">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label for="paitient_dateStart" class="layui-form-label">
+      <span class="">入院时间</span>
+    </label>
+    <div class="layui-input-inline">
+      <input type="date" id="paitient_dateStart" name="paitient_dateStart"
+             autocomplete="off"  class="layui-input">
+    </div>
+  </div>
+
+  <!--密接人数-->
+
+  <div class="layui-form-item">
+    <label class="layui-form-label required">所属科室</label>
+    <div class="layui-input-inline">
+      <input type="text" name="paitient_dept" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+
+  <!--身份证号码-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">病人状况</label>
+    <div class="layui-input-inline">
+      <input type="text" name="paitient_state" class="layui-input" id="card_num" placeholder="">
+    </div>
+  </div>
+  <!--联系方式-->
+  <div class="layui-form-item">
+    <label class="layui-form-label">病人医生</label>
+    <div class="layui-input-inline">
+      <input type="text" name="paitient_doc" placeholder="" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">病人房间号</label>
+    <div class="layui-input-inline">
+      <input type="text" name="paitient_room" placeholder="" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">病人病床号</label>
+    <div class="layui-input-inline">
+      <input type="text" name="paitient_bed" placeholder="" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <!--确认提交-->
+  <div class="layui-form-item layui-hide">
+    <input type="button" lay-submit lay-filter="LAY-user-front-submit" id="LAY-user-back-submit" value="确认">
+  </div>
+</form>
+
+<!--引入本地layui.js-->
+<script src="../../static/layui/layui.js"></script>
+<!--js-->
+<script type="text/javascript">
+  layui.config({
+    base: '../../static/layui/layuiadmin/' //静态资源所在路径js
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use('index');
+</script>
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    //常规用法
+    laydate.render({
+      elem: '#employee_birthday'
+    });
+
+  });
+</script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+<script>
+
+</script>
+
+</body>
+</html>
+
+
+</body>
+</html>

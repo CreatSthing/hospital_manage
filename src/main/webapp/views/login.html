@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>医院后台管理系统登录页面</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <!--引入本地的css样式-->
+  <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../static/css/admin.css" media="all">
+  <link rel="stylesheet" href="../static/css/login.css" media="all">
+ <!-- <style>
+    body{
+        background: url('static/images/3.jpg');
+    }
+  </style>-->
+</head>
+<!--009688-->
+<body style="background:url('../static/images/R-C.jpg') no-repeat ;background-size:cover;">
+
+  <div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+
+    <div class="layadmin-user-login-main" style="background-color: white;">
+      <!--  页眉    -->
+      <div class="layadmin-user-login-box layadmin-user-login-header">
+          <h2>医院后台管理系统</h2>
+
+      </div>
+    <!-- 主体-->
+      <form class="layadmin-user-login-box layadmin-user-login-body layui-form" action="" style="padding: 20px;">
+        <!--用户名-->
+        <div class="layui-form-item">
+          <label class="layadmin-user-login-icon layui-icon layui-icon-username"></label>
+          <input type="text" name="username"  lay-verify="required|username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+        </div>
+        <!--密码-->
+        <div class="layui-form-item">
+          <label class="layadmin-user-login-icon layui-icon layui-icon-password"></label>
+          <input type="password" name="password"  lay-verify="required|password" placeholder="请输入密码" class="layui-input">
+        </div>
+        <!--提交-->
+        <div class="layui-form-item">
+          <button type="submit" class="layui-btn layui-btn-fluid" lay-submit lay-filter="demo01">登录</button>
+        </div>
+      </form>
+    </div>
+
+    <!--页尾/页脚-->
+    <div class="layui-trans layadmin-user-login-footer">
+          <p><i class="layui-icon layui-icon-login-wechat"></i>微信快捷登录</p>
+    </div>
+  </div>
+
+  <script src="../static/js/jquery-3.6.0.min.js"></script>
+  <!--引入本地layui.js-->
+  <script src="../static/layui/layui.js"></script>
+  <script type="text/javascript">
+        layui.use(['form','layer'],function () {
+          var form=layui.form,
+              layer=layui.layer;
+          form.verify(
+                  {
+                    username:function(value){
+                        if(value.length<3)
+                            return '用户名不得少于3个字符';
+
+                    },
+                    password:[
+                        /^[\S]{6,12}$/
+                        ,'密码必须6到12位，且不能出现空格'
+                    ]
+                  });
+          //监听登录按钮，发起Ajax异步请求
+          //data.field-表单所以字段，名值对格式：{username:admin}
+          form.on('submit(demo01)',function (data) {
+
+              $.ajax({
+                url:"/sys_user/login",
+                type:"get",//常用两种
+                data:data.field,
+                dataType:"json",
+                success:function(res){//res-后端给前端响应的数据-msg（信息）,code(状态码),data
+
+                  if(res.code==200){
+                    //提示登录成功的信息，提示一秒就退出
+                    layer.msg('登录成功',
+                            {
+                              offset:'15px',
+                              icon:1,
+                              time:1000
+                            },function () {
+                            //跳转到首页
+                            //把User数据带到首页
+                              var user=res.data;
+                              sessionStorage.setItem("user",JSON.stringify(user));
+                              window.location.href="views/index.html"
+                            }
+                    )
+                  };
+                  if(res.code==500){
+                    alert(res.data)
+                  }
+                }
+              })
+            return false;
+          })
+
+                }
+        )
+
+  </script>
+  <script type="text/javascript">
+
+  </script>
+
+
+</body>
+</html>

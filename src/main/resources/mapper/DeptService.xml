@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.xhu.mapper.DeptMapper">
+    <!--分页查询确诊病例-->
+    <resultMap id="getDept" type="edu.xhu.pojo.Dept">
+        <id column="dept_id" jdbcType="INTEGER" property="dept_id"/>
+        <result column="dept_no" jdbcType="VARCHAR" property="dept_no"/>
+        <result column="dept_name" jdbcType="VARCHAR" property="dept_name"/>
+        <result column="dept_manager" jdbcType="VARCHAR" property="dept_manager"/>
+        <result column="dept_viceManager" jdbcType="VARCHAR" property="dept_viceManager"/>
+    </resultMap>
+    <select id="queryDeptListByPage" parameterType="map" resultMap="getDept">
+        select *from dept limit #{pageNow},#{pageSize}
+
+    </select>
+    <!--查询总记录数-->
+    <select id="countDept" resultType="int">
+         select count(*) from dept
+    </select>
+
+    <!-- 新增确诊病例   -->
+    <insert id="addDept" parameterType="Dept">
+            insert into dept(dept_id,dept_no,dept_name,dept_manager,dept_viceManager)
+            values(#{dept_id},#{dept_no},#{dept_name},#{dept_manager},#{dept_viceManager})
+    </insert>
+
+    <!--删除确诊病例（真删）-->
+<delete id="delDeptById" parameterType="int" >
+    delete from dept where dept_id=#{param1}
+</delete>
+
+    <!--修改确诊病例    -->
+    <update id="updateDeptById" parameterType="Dept" >
+        update dept set dept_id= #{dept_id},dept_no = #{dept_no},dept_name= #{dept_name},dept_manager=#{dept_manager},dept_viceManager=#{dept_viceManager}
+        where dept_id=#{dept_id}
+    </update>
+
+    <!-- 按条件并分页查询确诊病例  -->
+    <select id="queryDeptListByPageAndArgs" parameterType="map" resultMap="getDept">
+        select * from dept
+        <where>
+            <if test="dept_no != null">
+                dept_no = #{dept_no}
+            </if>
+            <if test="dept_name != null">
+                or dept_name=#{dept_name}
+            </if>
+        </where>
+        limit #{pageNow},#{pageSize}
+    </select>
+
+    <!--按条件查询总记录数  or去掉-->
+    <select id="countDeptByArgs" parameterType="map" resultType="int">
+        select count(*) from dept
+        <where>
+            <if test="dept_no != null">
+                dept_no=#{dept_no}
+            </if>
+            <if test="dept_name != null">
+                or dept_name=#{dept_name}
+            </if>
+        </where>
+    </select>
+    <!--查询所有数据-导出到Excel表格-->
+    <select id="exportDeptList" resultMap="getDept">
+        select * from dept
+    </select>
+
+
+</mapper>

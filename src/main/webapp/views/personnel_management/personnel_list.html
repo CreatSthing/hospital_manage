@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>员工信息表单列表</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <!--引入本地的css样式-->
+  <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../static/css/admin.css" media="all">
+
+</head>
+<body>
+  <!--容器-->
+  <div class="layui-fluid">
+  <!--   选项卡- 卡片风格-->
+    <div class="layui-card">
+      <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+        <div class="layui-form-item">
+          <!-- layui-block layui-inline-->
+            <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                  <input type="text" id="name" name="name" placeholder="请输入姓名"  class="layui-input">
+                </div>
+            </div>
+          <div class="layui-inline">
+          <label class="layui-form-label">部门号</label>
+          <div class="layui-input-block">
+            <input type="text" id="card_num" name="card_num" placeholder="请输入部门号" autocomplete="off" class="layui-input">
+          </div>
+          </div>
+          <div class="layui-inline">
+            <button class="layui-btn layuiadmin-btn-admin" id="btn_search" lay-submit lay-filter="LAY-user-back-search">
+              <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="layui-card-body">
+        <!--头部工具栏-->
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+              <button class="layui-btn layuiadmin-btn-admin" lay-event="add">新增</button>
+              <!--             <button class="layui-btn layuiadmin-btn-admin" lay-event="delete">Excel导出</button>
+                           <button class="layui-btn layuiadmin-btn-admin" lay-event="update">Excel导入</button> -->
+            </div>
+        </script>
+
+        <!--数据表格-->
+        <table class="layui-hide" id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>
+
+        <!-- laytpl模板引擎 数据库性别字段 1转换成男显示到页面；2转换成女显示到页面 -->
+        <script type="text/html" id="SexTpl">
+          {{#  if(d.sex == 1){ }}
+          <span>男</span>
+          {{#  } else if(d.sex == 2){ }}
+          <span>女</span>
+          {{#  } }}
+        </script>
+        <!-- laytpl模板引擎 数据库状态字段
+        1转换成正常显示到页面；2转换成冻结显示到页面 3转换成删除显示到页面 -->
+        <script type="text/html" id="statusTpl">
+          {{#  if(d.status == 1){ }}
+          <span>正常</span>
+          {{#  } else if(d.status == 2){ }}
+          <button type="button" class="layui-btn-xs layui-btn-disabled">冻结</button>
+          {{#  } else if(d.status == 3){ }}
+          <button type="button" class="layui-btn-xs layui-btn-danger">删除</button>
+          {{#  } }}
+        </script>
+
+
+        <script type="text/html" id="buttonTpl">
+          {{#  if(d.check == true){ }}
+            <button class="layui-btn layui-btn-xs">已审核</button>
+          {{#  } else { }}
+            <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
+          {{#  } }}
+        </script>
+
+        <script type="text/html" id="table-useradmin-admin">
+          <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+          {{#  if(d.role == '超级管理员'){ }}
+          <a class="layui-btn layui-btn-disabled layui-btn-xs"><i class="layui-icon layui-icon-delete"></i>删除</a>
+          {{#  } else { }}
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+          {{#  } }}
+        </script>
+      <!-- 侧边工具栏-->
+        <script type="text/html" id="barDemo">
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+
+
+      </div>
+    </div>
+  </div>
+
+<script src="../../static/js/jquery-3.6.0.min.js"></script>
+<!--引入本地layui.js-->
+<script src="../../static/layui/layui.js"></script>
+<!--js-->
+<script type="text/javascript">
+    layui.config({
+        base: '../../static/layui/layuiadmin/' //静态资源所在路径js
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use('index');
+</script>
+
+  <script type="text/javascript">
+
+          layui.use(['table','form'],function () {
+                var table = layui.table;
+                var form = layui.form;
+                //分页查询
+                table.render({
+                  elem:'#LAY-user-back-manage',//绑定table的id值
+                  url:'/Personnel/queryByPage',//请求接口的路径
+                  title:'员工信息表',
+                  toolbar:'#toolbarDemo',//开启头部工具栏
+                  cols:[[
+                    {field:"empId",title:"ID",sort:true,},
+                    {field:"empNum",title:"员工号"},
+                    {field:"empName",title:"员工姓名",},
+                    {field:"empDept_num",title:"所在部门号"},
+                    {field:"empDept",title:"职务"},
+                    {field:"empEdu",title:"学历"},
+                    {field:"empGender",title:"性别"},
+                    {field:"empBirth",title:"生日"},
+                    {field:"empPost",title:"工作岗位"},
+                    {fixed:'right',title:'操作',toolbar: '#barDemo',}
+                  ]],
+                  page:true,
+                  limits:[5,10,15,20]
+                })
+
+              table.on('tool(LAY-user-back-manage)', function(obj){
+              var data = obj.data; //获得当前行数据
+              var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+              var tr = obj.tr; //获得当前行 tr 的DOM对象
+              if(layEvent === 'edit'){
+
+              } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                  obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                  layer.close(index);
+                  //向服务端发送删除指令
+                  $.ajax({
+                    url:"/Personnel/deletePersonnel",
+                    type:"get",
+                    data:obj.data,
+                    dataType:"json",
+                    success:function (res) {//res响应回来的数据code msg
+                        if(res.code==200){
+                          layer.msg(res.msg,{
+
+                            offset:"15px",
+                            icon:1,
+                            time:1000
+                          },function () {
+
+                            window.location.reload();
+
+                          })
+                          layer.close(index);
+                        }
+                    }
+                  })
+                })
+              }
+            })
+
+            form.on('submit(LAY-user-back-search)', function(data){
+              var name=$("#name").val();
+              var card_num=$("#card_num").val();
+
+              table.render({
+                elem:'#LAY-user-back-manage',//绑定table的id值
+                url:'/Personnel/queryByPage',//请求接口的路径
+                title:'员工信息数据表',
+                toolbar:'#toolbarDemo',//开启头部工具栏
+                where:{
+                  "name":name,
+                  "card_num":card_num
+                },
+                cols:[[
+                  {field:"empId",title:"ID",sort:true,},
+                  {field:"empNum",title:"员工号"},
+                  {field:"empName",title:"员工姓名",},
+                  {field:"empDept_num",title:"所在部门号"},
+                  {field:"empDept",title:"职务"},
+                  {field:"empEdu",title:"学历"},
+                  {field:"empGender",title:"性别"},
+                  {field:"empBirth",title:"生日"},
+                  {field:"empPost",title:"工作岗位"},
+                  {fixed:'right',title:'操作',toolbar: '#barDemo',}
+                ]],
+                page:true,
+                limits:[5,10,15,20]
+              })
+              return false;
+            })
+                //监听数据表格头部工具栏的新增：点击新增按钮，弹出层弹出的是add.html
+                table.on('toolbar(LAY-user-back-manage)',function (obj) {
+                  var checkStatus = table.checkStatus(obj.config.id);
+                  console.log(checkStatus);
+                  switch (obj.event) {
+                      case 'add':
+                        layer.open({
+                          type:2,//iframe
+                          title:'添加员工信息',
+                          content:'add.html',
+                          area:['450px','500px'],
+                          maxmin:true,
+                          btn:['确定','取消'],
+                          yes:function (index, layero) {
+                            //获取addemployee.html子页面（list.html是父页面）
+                            var body = layer.getChildFrame('body', index);
+                            //获取页面中表单输入框的数据
+                            var submitData = body.find('#myform').serialize();
+                            console.log(submitData)
+                            //发起Ajax异步请求
+                            $.ajax({
+                                url:"/Personnel/addPersonnel",
+                                type:"post",
+                                data:submitData,
+                                dataType:"json",
+                                success:function (res) {//res响应回来的数据code msg
+                                      if(res.code==200){
+                                        layer.msg(res.msg,{
+                                          offset:"15px",
+                                          icon:1,
+                                          time:1000
+                                        },function () {
+                                          //刷新页面-页面也要显示新增的数据
+                                          window.location.reload();
+                                        })
+                                      }
+                                  if(res.code==500){
+                                    layer.msg(res.msg,{
+                                      offset:"15px",
+                                      icon:1,
+                                      time:1000
+                                    },function () {
+                                      //刷新页面-页面也要显示新增的数据
+                                      window.location.reload();
+                                    })
+                                  }
+                                  //关闭Layer弹出层
+                                  layer.close(index);
+                                }
+                            })
+                          }
+                        })
+                  }
+                })
+          })
+  </script>
+
+</body>
+</html>
+

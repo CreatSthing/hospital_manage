@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.xhu.mapper.BedMapper">
+
+    <select id="researchByPage" parameterType="map" resultType="edu.xhu.pojo.Bed">
+        select *from (select *from bed
+        <where>
+            <if test="id!=null and id!='' ">
+                bed_id = #{id}
+            </if>
+            <if test="num!=null and num!=''">
+                and bed_no = #{num}
+            </if>
+        </where>) as temp limit
+         #{pageNow},#{pageSize}
+    </select>
+
+    <select id="Sizes" parameterType="map" resultType="int">
+         select count(*) from (select *from bed
+        <where>
+            <if test="id!=null and id!='' ">
+                bed_id = #{id}
+            </if>
+            <if test="num!=null and num!=''">
+                and bed_no = #{num}
+            </if>
+        </where>) as temp
+    </select>
+    <insert id="insert" parameterType="Bed">
+  INSERT INTO `bed`(`bed_no`, `bed_roomId`, `bed_judge`)
+  VALUES ( #{bed_no},  #{bed_roomId},  #{bed_judge});
+
+    </insert>
+<delete id="delect" parameterType="Bed">
+
+  DELETE from bed where bed_id=#{bed_id}
+
+</delete>
+<update id="update" parameterType="Bed">
+UPDATE `bed` SET `bed_no` = #{bed_no}, `bed_roomId` = #{bed_roomId}, `bed_judge` = #{bed_judge} WHERE `bed_id` = #{bed_id};
+</update>
+
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.xhu.mapper.potionMapper">
+    <insert id="insert" parameterType="potion">
+        insert into potion (appartus_no,appartus_name,appartus_price,appartus_quantity,appartus_ren)values (#{appartus_no},#{appartus_name},#{appartus_price},#{appartus_quantity},#{appartus_ren})
+    </insert>
+    <delete id="delete" parameterType="int">
+        delete from potion where appartus_id=#{id}
+    </delete>
+    <select id="getbyid" parameterType="int" resultType="potion">
+        select appartus_id,appartus_no,appartus_name,appartus_price,appartus_quantity,appartus_ren from potion where appartus_id=#{id}
+    </select>
+<update id="update" parameterType="potion">
+    update potion set appartus_no=#{appartus_no},appartus_name=#{appartus_name},appartus_price=#{appartus_price},appartus_quantity=#{appartus_quantity},appartus_ren=#{appartus_ren} where appartus_id = #{appartus_id} ;
+</update>
+    <select id="getall" resultType="potion">
+        select appartus_id,appartus_no,appartus_name,appartus_price,appartus_quantity,appartus_ren from potion
+    </select>
+    <select id="queryByPage" parameterType="map" resultMap="page" >
+        select * from potion limit #{pageNow},#{pageSize}
+    </select>
+    <select id="getcount" resultType="int">
+        select count(*) from potion
+    </select>
+
+    <select id="getbyno" parameterType="string" resultType="potion">
+        SELECT *from potion where appartus_no=#{no}
+    </select>
+    <select id="getbyname" parameterType="string" resultType="potion">
+        SELECT *from potion where appartus_name=#{name}
+    </select>
+    <select id="getbynameandno" resultType="potion">
+        SELECT *from potion where appartus_name=#{name} and appartus_no=#{no}
+    </select>
+
+<!--    appartus_id;-->
+<!--    appartus_no;-->
+<!--    appartus_name;-->
+<!--    appartus_price;-->
+<!--    appartus_quantity;-->
+<!--    appartus_ren;-->
+    <resultMap id="page" type="potion">
+        <id column="appartus_id" jdbcType="INTEGER" property="appartus_id"/>
+        <result column="appartus_no" jdbcType="VARCHAR" property="appartus_no"/>
+        <result column="appartus_name" jdbcType="INTEGER" property="appartus_name"/>
+        <result column="appartus_price" jdbcType="INTEGER" property="appartus_price"/>
+        <result column="appartus_quantity" jdbcType="VARCHAR" property="appartus_quantity"/>
+        <result column="appartus_ren" jdbcType="VARCHAR" property="appartus_ren"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../static/css/admin.css" media="all">
+
+</head>
+<body>
+<div class="layui-fluid">
+
+    <!--   选项卡- 卡片风格-->
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <form id="patientForm" class="layui-form" lay-filter="patientForm"  >
+                    <!-- layui-block layui-inline-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">医生员工号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="emp_no" name="emp_no" placeholder=""  class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">医生姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="emp_name" name="emp_name" placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+
+
+                </form>
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-admin" id="btn_search" lay-submit lay-filter="LAY-user-back-search" >
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+
+            <table class="layui-hide" id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>
+
+            <!-- laytpl模板引擎 数据库性别字段 1转换成男显示到页面；2转换成女显示到页面 -->
+            <script type="text/html" id="SexTpl">
+                {{#  if(d.sex == 1){ }}
+                <span>男</span>
+                {{#  } else if(d.sex == 2){ }}
+                <span>女</span>
+                {{#  } }}
+            </script>
+            <!-- laytpl模板引擎 数据库状态字段
+            1转换成正常显示到页面；2转换成冻结显示到页面 3转换成删除显示到页面 -->
+            <script type="text/html" id="statusTpl">
+                {{#  if(d.status == 1){ }}
+                <span>正常</span>
+                {{#  } else if(d.status == 2){ }}
+                <button type="button" class="layui-btn-xs layui-btn-disabled">冻结</button>
+                {{#  } else if(d.status == 3){ }}
+                <button type="button" class="layui-btn-xs layui-btn-danger">删除</button>
+                {{#  } }}
+            </script>
+
+
+            <script type="text/html" id="buttonTpl">
+                {{#  if(d.check == true){ }}
+                <button class="layui-btn layui-btn-xs">已审核</button>
+                {{#  } else { }}
+                <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
+                {{#  } }}
+            </script>
+
+            <script type="text/html" id="table-useradmin-admin">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                {{#  if(d.role == '超级管理员'){ }}
+                <a class="layui-btn layui-btn-disabled layui-btn-xs"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                {{#  } else { }}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                {{#  } }}
+            </script>
+            <!-- 侧边工具栏-->
+            <script type="text/html" id="barDemo" lay-filter="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                <!--                <a class="layui-btn layui-btn-xs" lay-event="detail">查看详情</a>-->
+            </script>
+
+
+        </div>
+    </div>
+</div>
+
+<script src="../../static/js/jquery-3.6.0.min.js"></script>
+<!--引入本地layui.js-->
+<script src="../../static/layui/layui.js"></script>
+<!--js-->
+<script type="text/javascript">
+    layui.config({
+        base: '../../static/layui/layuiadmin/' //静态资源所在路径js
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use('index');
+</script>
+
+<script type="text/javascript">
+
+
+
+
+    layui.use(['table','form'],function () {
+        var table = layui.table;
+        var form = layui.form;
+        //分页查询
+        table.render({
+            elem:'#LAY-user-back-manage',//绑定table的id值
+            url:'/docpatient_confirm/queryByPage',//请求接口的路径
+            title:'医生病人数据表',
+            toolbar:'#toolbarDemo',//开启头部工具栏
+            cols:[[
+                {field:"emp_no",title:"医生工号",sort:true,width:120},
+                {field:"emp_name",title:"医生姓名",width:120},
+                {field:"paitient_id",title:"病人id"},
+                {field:"paitient_name",title:"病人姓名"},
+                {field:"paitient_gender",title:"病人性别"},
+                {field:"paitient_state",title:"病人状况"},
+                {field:"paitient_dateStart",title:"入院时间"}
+
+            ]],
+            page:true,
+            limits:[5,10,15,20]
+        })
+
+
+        form.on('submit(LAY-user-back-search)', function(data){
+            var emp_no=$("#emp_no").val();
+            var emp_name=$("#emp_name").val();
+
+
+
+            table.render({
+                elem:'#LAY-user-back-manage',//绑定table的id值
+                url:'/docpatient_confirm/queryByPage',//请求接口的路径
+                title:'医生病人数据表',
+                toolbar:'#toolbarDemo',//开启头部工具栏
+                where:{
+                    "emp_no":emp_no,
+                    "emp_name":emp_name,
+                },
+                cols:[[
+                    {field:"emp_no",title:"医生工号",sort:true,width:120},
+                    {field:"emp_name",title:"医生姓名",width:120},
+                    {field:"paitient_id",title:"病人id"},
+                    {field:"paitient_name",title:"病人姓名"},
+                    {field:"paitient_gender",title:"病人性别"},
+                    {field:"paitient_state",title:"病人状况"},
+                    {field:"paitient_dateStart",title:"入院时间"}
+                ]],
+                page:true,
+                limits:[5,10,15,20]
+            })
+            return false;
+
+        })
+        //监听数据表格头部工具栏的新增：点击新增按钮，弹出层弹出的是add.html
+
+
+
+
+
+
+
+    })
+
+
+</script>
+</body>
+</html>

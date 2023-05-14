@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门表单列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../static/css/admin.css" media="all">
+
+</head>
+<body>
+
+<!--容器<form id="bedForm" class="layui-form" lay-filter="bedForm"  >-->
+<!--容器-->
+<div class="layui-fluid">
+    <!--   选项卡- 卡片风格-->
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <!-- layui-block layui-inline-->
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">部门代号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="dept_no" name="dept_no" placeholder="请输入部门代号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">部门名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="dept_name" name="dept_name" placeholder="请输入部门名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+
+
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-admin" id="btn_search" lay-submit lay-filter="LAY-user-back-search" >
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <!--头部工具栏-->
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layuiadmin-btn-admin" lay-event="add">新增</button>
+                    <button class="layui-btn layuiadmin-btn-admin" lay-event="export">Excel导出</button>
+                    <button class="layui-btn layuiadmin-btn-admin" lay-event="import">Excel导入</button>
+                </div>
+            </script>
+
+            <!--数据表格-->
+            <table class="layui-hide" id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>
+
+            <!-- laytpl模板引擎 数据库性别字段 1转换成男显示到页面；2转换成女显示到页面 -->
+
+            <!-- laytpl模板引擎 数据库状态字段
+            1转换成正常显示到页面；2转换成冻结显示到页面 3转换成删除显示到页面 -->
+            <script type="text/html" id="statusTpl">
+                {{#  if(d.status == 1){ }}
+                <span>正常</span>
+                {{#  } else if(d.status == 2){ }}
+                <button type="button" class="layui-btn-xs layui-btn-disabled">冻结</button>
+                {{#  } else if(d.status == 3){ }}
+                <button type="button" class="layui-btn-xs layui-btn-danger">删除</button>
+                {{#  } }}
+            </script>
+
+
+            <script type="text/html" id="buttonTpl">
+                {{#  if(d.check == true){ }}
+                <button class="layui-btn layui-btn-xs">已审核</button>
+                {{#  } else { }}
+                <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
+                {{#  } }}
+            </script>
+
+            <script type="text/html" id="table-useradmin-admin">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                {{#  if(d.role == '超级管理员'){ }}
+                <a class="layui-btn layui-btn-disabled layui-btn-xs" lay-event="edit" ><i class="layui-icon layui-icon-delete"></i>删除</a>
+                {{#  } else { }}
+
+                {{#  } }}
+            </script>
+            <!-- 侧边工具栏-->
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+
+
+        </div>
+    </div>
+</div>
+  <!--  </form>-->
+    <script src="../../static/js/jquery-3.6.0.min.js"></script>
+<!--引入本地layui.js-->
+<script src="../../static/layui/layui.js"></script>
+<!--js-->
+<script type="text/javascript">
+    layui.config({
+        base: '../../static/layui/layuiadmin/' //静态资源所在路径js
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use('index');
+</script>
+
+<script type="text/javascript">
+
+
+
+    layui.use(['table','form'],function () {
+        var table = layui.table;
+        var form = layui.form;
+        //分页查询bed
+        table.render({
+            elem:'#LAY-user-back-manage',//绑定table的id值
+            url:'/dept_sys/queryByPage',//请求接口的路径
+            title:'部门信息数据表',
+            toolbar:'#toolbarDemo',//开启头部工具栏
+            cols:[[
+                {field:"dept_id",title:"ID号",sort:true,width:220},
+                {field:"dept_no",title:"部门代号"},
+                {field:"dept_name",title:"部门名称"},
+                {field:"dept_manager",title:"部门主任代号"},
+                {field:"dept_viceManager",title:"部门副主任代号"},
+                {fixed:'right',title:'操作',toolbar: '#barDemo',width:150}
+            ]],
+            page:true,
+            limits:[5,10,15,20]
+        })
+
+        //按照姓名和身份证号码搜索点击分页查询
+        $("#btn_search").click(function () {
+            //获取姓名和身份证号码值
+            var dept_no = $("#dept_no").val();
+            var dept_name = $("#dept_name").val();
+            //表格重载
+            table.reload('LAY-user-back-manage',{
+                url:'/dept_sys/search',
+                page:{
+                    curr:1//重写从第一页刷新
+                },
+                where:{
+                    dept_no:dept_no,
+                    dept_name:dept_name
+                }
+            })
+        })
+
+
+
+        //监听数据表格头部工具栏的新增：点击新增按钮，弹出层弹出的是add.html
+        table.on('toolbar(LAY-user-back-manage)',function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            console.log(checkStatus);
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type:2,//iframe
+                        title:'添加部门信息',
+                        content:'add.html',
+                        area:['450px','500px'],
+                        maxmin:true,
+                        btn:['确定','取消'],
+                        yes:function (index, layero) {
+                            //获取add.html子页面（list.html是父页面）
+                            var body = layer.getChildFrame('body', index);
+                            //获取页面中表单输入框的数据
+                            var submitData = body.find('#myform').serialize();
+                            //发起Ajax异步请求
+                            $.ajax({
+                                url:"/dept_sys/addDept",
+                                type:"post",
+                                data:submitData,
+                                dataType:"json",
+                                success:function (res) {//res响应回来的数据code msg
+                                    if(res.code==200){
+                                        layer.msg(res.msg,{
+                                            offset:"15px",
+                                            icon:1,
+                                            time:1000
+                                        },function () {
+                                            //刷新页面-页面也要显示新增的数据
+                                            window.location.reload();
+                                        })
+                                    }
+                                    if(res.code==500){
+                                        layer.msg(res.msg,{
+                                            offset:"15px",
+                                            icon:1,
+                                            time:1000
+                                        },function () {
+                                            //刷新页面-页面也要显示新增的数据
+                                            window.location.reload();
+                                        })
+                                    }
+                                    //关闭Layer弹出层
+                                    layer.close(index);
+                                }
+                            })
+                        }
+                    })
+                    break;
+                case 'export':
+                    //发起Ajax异步请求
+                    $.ajax({
+                        url:"/dept_sys/export",
+                        type:"get",
+                        dataType:"json",
+                        success:function (res) {
+                            if(res.code == 200){
+                                layer.msg(res.msg,{
+                                    offset:"15px",
+                                    icon:1,
+                                    time:1000
+                                })
+                            }
+                            if(res.code == 500){
+                                layer.msg(res.msg,{
+                                    offset:"15px",
+                                    icon:1,
+                                    time:1000
+                                })
+                            }
+                            if(res.code == 501){
+                                layer.msg(res.msg,{
+                                    offset:"15px",
+                                    icon:1,
+                                    time:1000
+                                })
+                            }
+                        }
+                    })
+                    break;
+                case 'import':
+                    //发起Ajax异步请求
+                    $.ajax({
+                        url:"/dept_sys/import",
+                        type:"post",
+                        dataType: "json",
+                        success:function (res) {
+                            if (res.code == 200) {
+                                layer.msg(res.msg, {
+                                    offset: "15px",
+                                    icon: 1,
+                                    time: 1000
+                                },function (){
+                                    //刷新
+                                    window.location.reload();
+                                })
+                            }
+                            if (res.code == 500) {
+                                layer.msg(res.msg, {
+                                    offset: "15px",
+                                    icon: 1,
+                                    time: 1000
+                                })
+                            }
+                        }
+                    })
+                    break;
+            }
+        })
+
+        //监听数据表格侧边工具栏的删除、编辑、查看详情
+        table.on('tool(LAY-user-back-manage)',function (obj) {
+            //获取选中行数据
+            var data = obj.data;
+            if(obj.event === 'del'){//删除
+                layer.confirm('确认要删除吗？',function (index) {
+                    //使用Jquery的Ajax异步请求
+                    $.ajax({
+                        url:"/dept_sys/delDept",//提交的路径
+                        type:"post",//提交方式GET和POST
+                        data:{id:data.dept_id},//前端请求给后端的参数：使用JSON格式数据封装
+                        dataType: "json",//响应数据格式
+                        success:function (res) {//res是响应回来的数据 code msg data(查询)
+                            //弹出提示信息
+                            layer.alert(res.msg);
+                            //页面真删
+                            obj.del();
+                            //关闭弹出层
+                            layer.close(index);
+                        }
+                    })
+                })
+            }else if(obj.event === 'edit'){//编辑
+                layer.open({
+                    type:2,//iframe-2
+                    title:"编辑部门信息",
+                    content: 'edit.html',
+                    area: ['450px','500px'],
+                    maxmin: true,
+                    btn:['确定','取消'],
+                    //确定按钮发起请求
+                    yes:function (index,layero) {
+                        //获取edit.html页面(list.html是父页面)
+                        var body = layer.getChildFrame('body', index);
+                        //edit.html页面表单中的值
+                        var submitData = body.find('#myform').serialize();
+                        //使用Ajax发起异步请求
+                        $.ajax({
+                            url:"/dept_sys/updateDept",
+                            type:"post",
+                            data:submitData,
+                            dataType:"json",
+                            success:function (res) {
+                                if(res.code==200){
+                                    layer.msg(res.msg,{
+                                        offset:"15px",
+                                        icon:1,
+                                        time:1000
+                                    },function () {
+                                        //刷新页面
+                                        window.location.reload();
+                                    })
+                                }
+                                if(res.code==500){
+                                    layer.msg(res.msg,{
+                                        offset:"15px",
+                                        icon:1,
+                                        time:1000
+                                    },function () {
+                                        //刷新页面
+                                        window.location.reload();
+                                    })
+                                }
+                                //关闭弹出层
+                                layer.close(index);
+                            }
+                        })
+                    },
+
+                    //做页面数据回显-难点：不同的控件数据值回显的写法不同
+                    success: function(layero, index){
+                        //获取子页面edit.html
+                        var body = layer.getChildFrame('body', index);
+                        //得到iframe页的窗口对象:需要把回显的数据渲染在iframe层的edit.html页面的表单中
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        //输入框
+                        body.find("input[name=dept_id]").val(data.dept_id);//id-隐藏
+                        body.find("input[name=dept_no]").val(data.dept_no);//name
+                        body.find("input[name=dept_name]").val(data.dept_name);//num
+                        body.find("input[name=dept_manager]").val(data.dept_manager);//name
+                        body.find("input[name=dept_viceManager]").val(data.dept_viceManager);//num
+
+                        //单选框
+                       // body.find("input[value="+data.bed_judge+"]").attr("checked","checked");
+                        // body.find("input[name=card_num]").val(data.card_num);//card_num
+                       // body.find("input[name=tel]").val(data.tel);//tel
+                        //渲染:一定要加，重要！！！
+                        iframeWin.layui.form.render();
+                        //下拉框
+                        /*
+                        <select>
+                            <option value="吃饭">吃饭</option>
+                            <option value="睡觉">睡觉/option>
+                            <option value="打王者">打王者</option>
+                        </select>
+                         */
+                        //body.find("option[value="+data.hobby+"]").attr("selected",true);
+                    }
+                })
+            }else if(obj.event === 'detail'){//查看详情
+                layer.open({
+                    type:2,
+                    title:"查询部门信息",
+                    content:'detail.html',
+                    area:['450px','500px'],
+                    maxmin:true,
+                    //做页面数据的回显
+                    success:function (layero,index) {
+                        //获取子页面edit.html
+                        var body = layer.getChildFrame('body', index);
+                        //得到iframe页的窗口对象:需要把回显的数据渲染在iframe层的edit.html页面的表单中
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        //输入框
+                        body.find("input[name=dept_id]").val(data.dept_id);//id-隐藏
+                        body.find("input[name=dept_no]").val(data.dept_no);//name
+                        body.find("input[name=dept_name]").val(data.dept_name);//num
+                        body.find("input[name=dept_manager]").val(data.dept_manager);//name
+                        body.find("input[name=dept_viceManager]").val(data.dept_viceManager);
+                        iframeWin.layui.form.render();
+                    }
+                })
+            }
+        })
+    })
+
+</script>
+
+</body>
+</html>

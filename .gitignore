@@ -1,0 +1,4 @@
+#忽略 idea jdbc target文件
+.idea
+target
+src/main/resoures/application.yml

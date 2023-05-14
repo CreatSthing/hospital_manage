@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.xhu.mapper.PatientMapper">
+
+    <resultMap id="getPatient" type="edu.xhu.pojo.Patient">
+        <id column="paitient_id" jdbcType="INTEGER" property="paitient_id"/>
+        <result column="paitient_name" jdbcType="VARCHAR" property="paitient_name"/>
+        <result column="paitient_gender" jdbcType="VARCHAR" property="paitient_gender"/>
+        <result column="paitient_dateStart" jdbcType="DATE" property="paitient_dateStart"/>
+        <result column="paitient_dept" jdbcType="VARCHAR" property="paitient_dept"/>
+        <result column="paitient_state" jdbcType="VARCHAR" property="paitient_state"/>
+        <result column="paitient_doc" jdbcType="VARCHAR" property="paitient_doc"/>
+        <result column="paitient_room" jdbcType="VARCHAR" property="paitient_room"/>
+        <result column="paitient_bed" jdbcType="VARCHAR" property="paitient_bed"/>
+    </resultMap>
+<!--    <select id="queryPerSonList" parameterType="map" resultMap="getPatient">-->
+<!--        select  * from ( select *from paitient-->
+<!--        <where>-->
+<!--            <if test="paitient_id!=null and paitient_id!='' ">-->
+<!--                 paitient_id = #{paitient_id}-->
+<!--            </if>-->
+<!--            <if test="paitient_name!=null and paitient_name!=''">-->
+<!--                and paitient_name = #{paitient_name}-->
+<!--            </if>-->
+<!--            <if test="paitient_gender!=null and paitient_gender!=''">-->
+<!--                and paitient_gender = #{paitient_gender}-->
+<!--            </if>-->
+<!--        </where>) as temp limit #{pageNow},#{pageSize}-->
+<!--    </select>-->
+
+    <select id="countPerson" parameterType="map" resultType="int">
+         select count(*) from paitient
+        <where>
+            <if test="paitient_id!=null and paitient_id!='' ">
+                paitient_id = #{paitient_id}
+            </if>
+            <if test="paitient_name!=null and paitient_name!=''">
+                and  paitient_name like concat('%',#{paitient_name} '%')
+            </if>
+            <if test="paitient_gender!=null and paitient_gender!=''">
+                and paitient_gender = #{paitient_gender}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPersonListByPage" parameterType="map" resultMap="getPatient">
+        select  * from ( select *from paitient
+        <where>
+            <if test="paitient_id!=null and paitient_id!='' ">
+                paitient_id = #{paitient_id}
+            </if>
+            <if test="paitient_name!=null and paitient_name!=''">
+                and paitient_name like concat('%',#{paitient_name} '%')
+            </if>
+            <if test="paitient_gender!=null and paitient_gender!=''">
+                and paitient_gender = #{paitient_gender}
+            </if>
+        </where>) as temp limit #{pageNow},#{pageSize}
+    </select>
+    <insert id="addPatient" parameterType="Patient">
+            insert into paitient(paitient_name,paitient_gender,paitient_dateStart,paitient_dept,paitient_state,paitient_doc,paitient_room,paitient_bed)
+            values(#{paitient_name},#{paitient_gender},#{paitient_dateStart},#{paitient_dept},#{paitient_state},#{paitient_doc},#{paitient_room },#{paitient_bed})
+    </insert>
+<!--    void deletePatient(Integer paitient_id);-->
+<delete id="deletePatient" parameterType="Patient" >
+    DELETE FROM paitient WHERE paitient_id=#{paitient_id}
+</delete>
+    <update id="editPatient" parameterType="Patient" >
+            UPDATE paitient SET
+    paitient_name= #{paitient_name},
+    paitient_gender= #{paitient_gender},
+    paitient_dateStart=#{paitient_dateStart},
+    paitient_dept= #{paitient_dept},
+    paitient_state= #{paitient_state} ,
+    paitient_doc= #{ paitient_doc},
+    paitient_room=#{ paitient_room},
+    paitient_bed= #{paitient_bed}
+     WHERE paitient_id=#{paitient_id}
+    </update>
+
+<!--    Patient queryOnePerson(Integer paitient_id,String paitient_name,String paitient_gender);-->
+<!--    <select id="queryOnePerson" parameterType="Patient" resultMap="getPatient">-->
+<!--            select * from paitient WHERE-->
+<!--            paitient_id = #{paitient_id} AND-->
+<!--            paitient_name = #{paitient_name} AND-->
+<!--            paitient_gender = #{paitient_gender}-->
+<!--    </select>-->
+
+<!--    ,#{paitient_dateStart}-->
+</mapper>
